@@ -1,0 +1,35 @@
+version: '3.8'
+
+services:
+  mongodb:
+    image: mongo:latest
+    container_name: mongodb
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - money-flow-network
+
+  mscore-backend:
+    build:
+      context: .
+    container_name: mscore-backend
+    depends_on:
+      - mongodb
+    ports:
+      - "5000:5000"
+    environment:
+      - MONGO_URI=mongodb://mongodb:27017/mscore_database
+      - FLASK_APP=app.py
+    networks:
+      - money-flow-network
+    # volumes:
+    #   - .:/app
+
+volumes:
+  mongodb_data:
+
+networks:
+  money-flow-network:
+    driver: bridge
