@@ -42,5 +42,19 @@ def add_transaction():
 
     return redirect(url_for('index'))
 
+@app.route('/transactions', methods=['GET'])
+def get_transactions():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Fetch all transactions from the database
+    cur.execute("SELECT * FROM transactions ORDER BY date DESC")
+    transactions = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return render_template('transactions_list.html', transactions=transactions)
+
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
