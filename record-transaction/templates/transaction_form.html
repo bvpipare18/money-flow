@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Financial Transaction Form</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Financial Transaction Form</h2>
+        <form action="/api/transactions" method="POST">
+            <div class="form-group">
+                <label for="date">Date:</label>
+                <input type="date" class="form-control" id="date" name="date" required>
+            </div>
+            <div class="form-group">
+                <label for="amount">Amount (INR):</label>
+                <input type="number" class="form-control" id="amount" name="amount" required>
+            </div>
+            <div class="form-group">
+                <label for="transaction_type">Transaction Type:</label>
+                <select class="form-control" id="transaction_type" name="transaction_type" required>
+                    <option value="Gpay">Gpay</option>
+                    <option value="PhonePe">PhonePe</option>
+                    <option value="Other">Other (specify)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="description">Description:</label>
+                <input type="text" class="form-control" id="description" name="description">
+            </div>
+            <div class="form-group">
+                <label for="category">Category:</label>
+                <select class="form-control" id="category" name="category" required>
+                    <option value="Food">Food</option>
+                    <option value="Bills">Bills</option>
+                    <option value="Transportation">Transportation</option>
+                    <option value="Others">Others</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
