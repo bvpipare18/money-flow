@@ -17,7 +17,18 @@ def get_db_connection():
 
 @app.route('/')
 def index():
-    return render_template('transaction_form.html')
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Fetch all categories from the database
+    cur.execute("SELECT name FROM categories")
+    categories = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return render_template('transaction_form.html', categories=categories)
+
 
 @app.route('/api/transactions', methods=['POST'])
 def add_transaction():
