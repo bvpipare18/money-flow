@@ -18,7 +18,7 @@
         </form>
 
         <h2 class="mt-5">Existing Categories</h2>
-        <ul id="category-list">
+        <ul id="category-list" class="list-group">
             <!-- Categories will be fetched and displayed here -->
         </ul>
     </div>
@@ -28,6 +28,7 @@
             fetchCategories();
         });
 
+        // Fetch categories from the server and display them
         function fetchCategories() {
             fetch('/api/categories')
                 .then(response => response.json())
@@ -37,11 +38,33 @@
 
                     categories.forEach(category => {
                         const li = document.createElement('li');
-                        li.textContent = category[1]; // Display the name of the category
+                        li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+                        li.innerHTML = `
+                            ${category[1]} 
+                            <button class="btn btn-danger btn-sm" onclick="deleteCategory(${category[0]})">Delete</button>
+                        `;
                         categoryList.appendChild(li);
                     });
                 })
+                .catch(error => console.error('Error fetching categories:', error));
+        }
+
+        // Delete category by ID
+        function deleteCategory(categoryId) {
+            if (confirm('Are you sure you want to delete this category?')) {
+                fetch(`/api/categories/${categoryId}`, {
+                    method: 'DELETE',
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Category deleted successfully.');
+                        fetchCategories(); // Refresh the list after deletion
+                    } else {
+                        alert('Error deleting category.');
+                    }
+                })
                 .catch(error => console.error('Error:', error));
+            }
         }
     </script>
 </body>
