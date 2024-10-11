@@ -50,3 +50,22 @@
    ```sql
    SELECT * FROM transactions;
    ```
+
+10. Create a table for categories:
+   ```sql
+   CREATE TABLE categories (
+      id SERIAL PRIMARY KEY,
+      name VARCHAR(50) NOT NULL UNIQUE
+   );
+   ```
+
+11. Grant privileges on the categories table to the user:
+   ```sql
+   GRANT ALL PRIVILEGES ON TABLE categories TO user1;
+   ```
+
+12. Grant usage and select privileges on the sequence to the user:
+   ```sql
+   GRANT USAGE, SELECT ON SEQUENCE categories_id_seq TO user1;
+   ```
+

@@ -1,6 +1,5 @@
 from flask import Flask, render_template, request, redirect, url_for, jsonify
 import psycopg2
-from datetime import datetime
 
 app = Flask(__name__)
 
@@ -15,6 +14,7 @@ def get_db_connection():
     )
     return conn
 
+# Route for the transaction form with category dropdown
 @app.route('/')
 def index():
     conn = get_db_connection()
@@ -29,7 +29,7 @@ def index():
 
     return render_template('transaction_form.html', categories=categories)
 
-
+# Add transaction to the database
 @app.route('/api/transactions', methods=['POST'])
 def add_transaction():
     date = request.form['date']
@@ -53,6 +53,7 @@ def add_transaction():
 
     return redirect(url_for('index'))
 
+# Fetch transactions
 @app.route('/transactions', methods=['GET'])
 def get_transactions():
     conn = get_db_connection()
@@ -67,17 +68,18 @@ def get_transactions():
 
     return render_template('transactions_list.html', transactions=transactions)
 
+# Route for category form
 @app.route('/categories', methods=['GET'])
 def categories():
     return render_template('category_form.html')
 
+# Add new category
 @app.route('/api/categories', methods=['POST'])
 def add_category():
     category_name = request.form['name']
 
     conn = get_db_connection()
     cur = conn.cursor()
-    print(category_name)
 
     # Insert the new category into the database
     cur.execute("INSERT INTO categories (name) VALUES (%s) RETURNING id;", (category_name,))
@@ -88,6 +90,36 @@ def add_category():
     conn.close()
 
     return redirect(url_for('categories'))
+
+# Fetch categories as JSON
+@app.route('/api/categories', methods=['GET'])
+def get_all_categories():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Fetch all categories
+    cur.execute("SELECT * FROM categories")
+    categories = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return jsonify(categories)
+
+# Delete a category by ID
+@app.route('/api/categories/<int:category_id>', methods=['DELETE'])
+def delete_category(category_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Delete the category from the database
+    cur.execute("DELETE FROM categories WHERE id = %s", (category_id,))
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    return '', 204  # Return 'No Content' status after deletion
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
