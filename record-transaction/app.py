@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, jsonify
 import psycopg2
 from datetime import datetime
 
@@ -55,6 +55,28 @@ def get_transactions():
     conn.close()
 
     return render_template('transactions_list.html', transactions=transactions)
+
+@app.route('/categories', methods=['GET'])
+def categories():
+    return render_template('category_form.html')
+
+@app.route('/api/categories', methods=['POST'])
+def add_category():
+    category_name = request.form['name']
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+    print(category_name)
+
+    # Insert the new category into the database
+    cur.execute("INSERT INTO categories (name) VALUES (%s) RETURNING id;", (category_name,))
+    new_id = cur.fetchone()[0]
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    return redirect(url_for('categories'))
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
