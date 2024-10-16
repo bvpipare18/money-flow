@@ -11,6 +11,7 @@
         <h2>Financial Transaction Form</h2>
         <a href="/transactions" class="btn btn-info mb-3">View Transactions</a>
         <a href="/categories" class="btn btn-info mb-3">Manage Categories</a>
+        <a href="/transaction_types" class="btn btn-info mb-3">Manage Transaction Types</a>
         <form action="/api/transactions" method="POST">
             <div class="form-group">
                 <label for="date">Date:</label>
@@ -23,9 +24,10 @@
             <div class="form-group">
                 <label for="transaction_type">Transaction Type:</label>
                 <select class="form-control" id="transaction_type" name="transaction_type" required>
-                    <option value="Gpay">Gpay</option>
-                    <option value="PhonePe">PhonePe</option>
-                    <option value="Other">Other (specify)</option>
+                    <!-- Loop through transaction types passed from Flask and create dropdown options -->
+                    {% for transaction_type in transaction_types %}
+                        <option value="{{ transaction_type[1] }}">{{ transaction_type[1] }}</option>
+                    {% endfor %}
                 </select>
             </div>
             <div class="form-group">

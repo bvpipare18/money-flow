@@ -24,10 +24,14 @@ def index():
     cur.execute("SELECT name FROM categories")
     categories = cur.fetchall()
 
+    # Fetch all transaction types from the database
+    cur.execute("SELECT id, name FROM transaction_types")
+    transaction_types = cur.fetchall()
+
     cur.close()
     conn.close()
 
-    return render_template('transaction_form.html', categories=categories)
+    return render_template('transaction_form.html', categories=categories, transaction_types=transaction_types)
 
 # Add transaction to the database
 @app.route('/api/transactions', methods=['POST'])
@@ -114,6 +118,55 @@ def delete_category(category_id):
 
     # Delete the category from the database
     cur.execute("DELETE FROM categories WHERE id = %s", (category_id,))
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    return '', 204  # Return 'No Content' status after deletion
+
+@app.route('/transaction_types', methods=['GET'])
+def transaction_types():
+    return render_template('transaction_type_form.html')
+
+@app.route('/api/transaction_types', methods=['POST'])
+def add_transaction_type():
+    transaction_type_name = request.form['name']
+
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Insert the new transaction type into the database
+    cur.execute("INSERT INTO transaction_types (name) VALUES (%s) RETURNING id;", (transaction_type_name,))
+    new_id = cur.fetchone()[0]
+    conn.commit()
+
+    cur.close()
+    conn.close()
+
+    return redirect(url_for('transaction_types'))
+
+@app.route('/api/transaction_types', methods=['GET'])
+def get_transaction_types():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Fetch all transaction types from the database
+    cur.execute("SELECT id, name FROM transaction_types")
+    transaction_types = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    return jsonify(transaction_types)
+
+@app.route('/api/transaction_types/<int:type_id>', methods=['DELETE'])
+def delete_transaction_type(type_id):
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Delete the transaction type from the database
+    cur.execute("DELETE FROM transaction_types WHERE id = %s", (type_id,))
     conn.commit()
 
     cur.close()

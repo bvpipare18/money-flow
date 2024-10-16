@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Transaction Types</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1>Add New Transaction Type</h1>
+        <form action="/api/transaction_types" method="POST">
+            <div class="form-group">
+                <label for="transaction-type-name">Transaction Type Name:</label>
+                <input type="text" class="form-control" name="name" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Add Transaction Type</button>
+        </form>
+
+        <h2 class="mt-5">Existing Transaction Types</h2>
+        <ul id="transaction-type-list" class="list-group">
+            <!-- Transaction Types will be fetched and displayed here -->
+        </ul>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchTransactionTypes();
+        });
+
+        // Fetch transaction types from the server and display them
+        function fetchTransactionTypes() {
+            fetch('/api/transaction_types')
+                .then(response => response.json())
+                .then(transactionTypes => {
+                    const transactionTypeList = document.getElementById('transaction-type-list');
+                    transactionTypeList.innerHTML = ''; // Clear existing transaction types
+
+                    transactionTypes.forEach(transactionType => {
+                        const li = document.createElement('li');
+                        li.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-center');
+                        li.innerHTML = `
+                            ${transactionType[1]} 
+                            <button class="btn btn-danger btn-sm" onclick="deleteTransactionType(${transactionType[0]})">Delete</button>
+                        `;
+                        transactionTypeList.appendChild(li);
+                    });
+                })
+                .catch(error => console.error('Error fetching transaction types:', error));
+        }
+
+        // Delete transaction type by ID
+        function deleteTransactionType(transactionTypeId) {
+            if (confirm('Are you sure you want to delete this transaction type?')) {
+                fetch(`/api/transaction_types/${transactionTypeId}`, {
+                    method: 'DELETE',
+                })
+                .then(response => {
+                    if (response.ok) {
+                        alert('Transaction type deleted successfully.');
+                        fetchTransactionTypes(); // Refresh the list after deletion
+                    } else {
+                        alert('Error deleting transaction type.');
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+            }
+        }
+    </script>
+</body>
+</html>

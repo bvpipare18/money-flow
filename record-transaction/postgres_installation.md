@@ -69,3 +69,21 @@
    GRANT USAGE, SELECT ON SEQUENCE categories_id_seq TO user1;
    ```
 
+13. Create a table for transaction types:
+   ```sql
+   CREATE TABLE transaction_types (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(50) NOT NULL
+   );
+   ```
+
+11. Grant privileges on the transaction_types table to the user:
+   ```sql
+   GRANT ALL PRIVILEGES ON TABLE transaction_types TO user1;
+   ```
+
+12. Grant usage and select privileges on the sequence to the user:
+   ```sql
+   GRANT USAGE, SELECT ON SEQUENCE transaction_types_id_seq TO user1;
+   ```
+
