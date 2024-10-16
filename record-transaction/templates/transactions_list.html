@@ -9,14 +9,46 @@
 <body>
     <div class="container mt-5">
         <h2>Transaction List</h2>
-        <a href="/" class="btn btn-primary mb-3">Add New Transaction</a>
-        <!-- Download CSV Button -->
-        <a href="/api/transactions/csv" class="btn btn-success mb-3">Download CSV</a>
+        <a href="/categories" class="btn btn-info mb-3">Manage Categories</a>
+        <a href="/" class="btn btn-info mb-3">Back to Transaction Form</a>
 
-        <table class="table table-striped">
+        <!-- Filters -->
+        <div class="row mb-3">
+            <div class="col">
+                <label for="from-date">From:</label>
+                <input type="date" id="from-date" class="form-control">
+            </div>
+            <div class="col">
+                <label for="to-date">To:</label>
+                <input type="date" id="to-date" class="form-control">
+            </div>
+            <div class="col">
+                <label for="transaction-type">Transaction Type:</label>
+                <select id="transaction-type" class="form-control">
+                    <option value="">All</option>
+                    <option value="Gpay">Gpay</option>
+                    <option value="PhonePe">PhonePe</option>
+                    <option value="Other">Other</option>
+                </select>
+            </div>
+            <div class="col">
+                <label for="category-filter">Category:</label>
+                <select id="category-filter" class="form-control">
+                    <option value="">All</option>
+                    {% for category in categories %}
+                        <option value="{{ category[0] }}">{{ category[0] }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col">
+                <label>&nbsp;</label>
+                <button class="btn btn-primary btn-block" id="download-btn">Download CSV</button>
+            </div>
+        </div>
+
+        <table class="table">
             <thead>
                 <tr>
-                    <th>ID</th>
                     <th>Date</th>
                     <th>Amount (INR)</th>
                     <th>Transaction Type</th>
@@ -26,20 +58,29 @@
             </thead>
             <tbody>
                 {% for transaction in transactions %}
-                <tr>
-                    <td>{{ transaction[0] }}</td>
-                    <td>{{ transaction[1] }}</td>
-                    <td>{{ transaction[2] }}</td>
-                    <td>{{ transaction[3] }}</td>
-                    <td>{{ transaction[4] }}</td>
-                    <td>{{ transaction[5] }}</td>
-                </tr>
+                    <tr>
+                        <td>{{ transaction[1] }}</td>
+                        <td>{{ transaction[2] }}</td>
+                        <td>{{ transaction[3] }}</td>
+                        <td>{{ transaction[4] }}</td>
+                        <td>{{ transaction[5] }}</td>
+                    </tr>
                 {% endfor %}
             </tbody>
         </table>
     </div>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        document.getElementById('download-btn').addEventListener('click', function() {
+            const fromDate = document.getElementById('from-date').value;
+            const toDate = document.getElementById('to-date').value;
+            const transactionType = document.getElementById('transaction-type').value;
+            const category = document.getElementById('category-filter').value;
+
+            // Construct the URL with query parameters
+            const url = `/api/transactions/csv?from=${fromDate}&to=${toDate}&transaction_type=${transactionType}&category=${category}`;
+            window.location.href = url;
+        });
+    </script>
 </body>
 </html>

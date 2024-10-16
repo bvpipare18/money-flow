@@ -178,11 +178,35 @@ def delete_transaction_type(type_id):
 
 @app.route('/api/transactions/csv', methods=['GET'])
 def download_transactions_csv():
+    # Get query parameters for filtering
+    from_date = request.args.get('from')
+    to_date = request.args.get('to')
+    transaction_type = request.args.get('transaction_type')
+    category = request.args.get('category')
+
     conn = get_db_connection()
     cur = conn.cursor()
 
-    # Fetch all transactions from the database
-    cur.execute("SELECT date, amount, transaction_type, description, category FROM transactions")
+    # Start building the query
+    query = "SELECT date, amount, transaction_type, description, category FROM transactions WHERE TRUE"
+    params = []
+
+    # Add conditions based on the provided query parameters
+    if from_date:
+        query += " AND date >= %s"
+        params.append(from_date)
+    if to_date:
+        query += " AND date <= %s"
+        params.append(to_date)
+    if transaction_type:
+        query += " AND transaction_type = %s"
+        params.append(transaction_type)
+    if category:
+        query += " AND category = %s"
+        params.append(category)
+
+    # Execute the query
+    cur.execute(query, params)
     transactions = cur.fetchall()
 
     cur.close()
