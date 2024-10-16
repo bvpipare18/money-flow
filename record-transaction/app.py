@@ -1,5 +1,7 @@
-from flask import Flask, render_template, request, redirect, url_for, jsonify
+from flask import Flask, render_template, request, redirect, url_for, jsonify, make_response
 import psycopg2
+import csv
+import io
 
 app = Flask(__name__)
 
@@ -173,6 +175,37 @@ def delete_transaction_type(type_id):
     conn.close()
 
     return '', 204  # Return 'No Content' status after deletion
+
+@app.route('/api/transactions/csv', methods=['GET'])
+def download_transactions_csv():
+    conn = get_db_connection()
+    cur = conn.cursor()
+
+    # Fetch all transactions from the database
+    cur.execute("SELECT date, amount, transaction_type, description, category FROM transactions")
+    transactions = cur.fetchall()
+
+    cur.close()
+    conn.close()
+
+    # Use StringIO for writing CSV data
+    csv_output = io.StringIO()
+    csv_writer = csv.writer(csv_output)
+
+    # Write CSV headers
+    csv_writer.writerow(['Date', 'Amount (INR)', 'Transaction Type', 'Description', 'Category'])
+
+    # Write transaction data rows
+    for transaction in transactions:
+        csv_writer.writerow(transaction)
+
+    # Prepare the response as a CSV download
+    response = make_response(csv_output.getvalue())
+    response.headers['Content-Disposition'] = 'attachment; filename=transactions.csv'
+    response.headers['Content-Type'] = 'text/csv'
+
+    return response
+
 
 if __name__ == '__main__':
     app.run(debug=True, port=5001)
